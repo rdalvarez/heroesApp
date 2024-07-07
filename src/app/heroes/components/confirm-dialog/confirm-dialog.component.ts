@@ -9,8 +9,13 @@ import { Hero } from '../../interfaces/hero.interface';
 
 })
 export class ConfirmDialogComponent {
+
   readonly dialogRef = inject(MatDialogRef<ConfirmDialogComponent>);
   readonly data = inject<Hero>(MAT_DIALOG_DATA);
+
+  constructor(){
+    console.log( this.data );
+  }
 
   onNoClick(): void {
     this.dialogRef.close(false);
