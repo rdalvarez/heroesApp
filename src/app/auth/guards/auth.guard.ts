@@ -13,40 +13,38 @@ import { tap } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
 
-
 export const canActivateGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot
 ) => {
+  console.log('CanActivate', { route, state });
 
-  console.log('CanActivate');
-  console.log({ route, state });
-
-  const authService = inject(AuthService);
-  const router = inject(Router);
-
-  return authService.checkAuthentication()
-    .pipe(
-      tap( isAuthenticated => console.log('Authenticated: ', isAuthenticated)),
-      tap(  isAuthenticated => {
-        if( !isAuthenticated ) {
-          router.navigate(['./auth/login']);
-        }
-      } ),
-
-    )
+  var CheckStatuAuth = checkAuthStatus;
+  return CheckStatuAuth();
 };
 
 export const canMatchGuard: CanMatchFn = (
   route: Route,
   segments: UrlSegment[]
 ) => {
-  console.log('CanMatch');
-  console.log({ route, segments });
+  console.log('CanMatch', { route, segments });
 
-  return true;
+  var CheckStatuAuth = checkAuthStatus;
+  return CheckStatuAuth();
 };
 
+const checkAuthStatus = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-
-
+  return authService.checkAuthentication().pipe(
+    tap((isAuthenticated) =>
+      console.log('AuthGuard-checkAuthentication: ', isAuthenticated)
+    ),
+    tap((isAuthenticated) => {
+      if (!isAuthenticated) {
+        router.navigate(['./auth/login']);
+      }
+    })
+  );
+};
